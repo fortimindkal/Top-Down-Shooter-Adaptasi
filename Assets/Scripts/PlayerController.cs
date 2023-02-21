@@ -29,13 +29,21 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Movement();
+        Rotation();
+    }
+
+    private void Movement()
+    {
         // Menggerakkan karakter sesuai arah gerakan dan kecepatan
         rb.MovePosition(rb.position + moveDir * moveSpeed * Time.fixedDeltaTime);
+    }
 
+    private void Rotation()
+    {
         // Mengarahkan senjata ke arah kursor mouse
         Vector2 lookDir = mousePos - rb.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = angle;
     }
-
 }
