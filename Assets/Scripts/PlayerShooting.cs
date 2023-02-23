@@ -12,6 +12,11 @@ public class PlayerShooting : MonoBehaviour
     private int _currentWeaponIndex = 0;
     private BulletPool _bulletPool;
 
+    // Flamethrower specific variables
+    public GameObject flamePrefab;
+    public float flameDuration = 3f;
+    public float flameDelay = 0.1f;
+
     // Grenade Launcher specific variables
     public int grenadeAmmo = 3;
     public GameObject grenadePrefab;
@@ -19,6 +24,7 @@ public class PlayerShooting : MonoBehaviour
     public float grenadeThrowDelay = 5f;
 
     private bool _isThrowingGrenade = false;
+    private bool _isShootingFlame = false;
 
     public GameObject[] weaponPrefabs; // Array dari Weapon Prefabs
     public GameObject currentWeapon; // Senjata yang sedang digunakan
@@ -52,24 +58,65 @@ public class PlayerShooting : MonoBehaviour
         if (Input.GetButtonDown("Fire1"))
         {
             //Menembak jika menekan klik kiri
-            Shoot();
+            if (_currentWeaponIndex == 0)
+            {
+                //Jika senjata no 0, tembak bullet biasa
+                ShootBullet();
+            }
+            else if (_currentWeaponIndex == 1)
+            {
+                //Jika senjata no 1, tembak grenade launcher
+                ShootGrenadeLauncher();
+            }
+            else if (_currentWeaponIndex == 2)
+            {
+                //Jika senjata no 2, tembak flamethrower
+                ShootFlamethrower();
+            }
         }
-
-
-        if (Input.GetKeyDown(KeyCode.G) && grenadeAmmo > 0 && !_isThrowingGrenade)
+        else if (Input.GetButtonUp("Fire1") && _currentWeaponIndex == 2)
         {
-            //Melempar Grenade
-            StartCoroutine(ThrowGrenade());
+            //Hentikan tembakan jika melepaskan klik kiri pada flamethrower
+            StopShootingFlame();
         }
     }
 
-    void Shoot()
+    void ShootBullet()
     {
         GameObject bullet = _bulletPool.GetBullet();
         bullet.transform.position = firePoint.position;
         bullet.transform.rotation = firePoint.rotation;
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         rb.AddForce(firePoint.up * bulletForces[_currentWeaponIndex], ForceMode2D.Impulse);
+
+        // Menghitung jarak dari bullet ke setiap musuh
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(bullet.transform.position, 5f);
+        foreach (Collider2D hit in hitEnemies)
+        {
+            Enemy enemy = hit.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(100);
+            }
+        }
+    }
+
+    void ShootGrenadeLauncher()
+    {
+        StartCoroutine(ThrowGrenade());
+    }
+
+    void ShootFlamethrower()
+    {
+        if (!_isShootingFlame)
+        {
+            _isShootingFlame = true;
+            StartCoroutine(ShootFlame());
+        }
+    }
+    void StopShootingFlame()
+    {
+        _isShootingFlame = false;
     }
 
     void SwitchWeapon()
@@ -99,9 +146,6 @@ public class PlayerShooting : MonoBehaviour
         yield return new WaitForSeconds(grenadeThrowDelay);
         _isThrowingGrenade = false;
 
-        // Membuat efek blink
-        StartCoroutine(BlinkSprite());
-
         // Menghentikan grenade yang telah dilempar
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
@@ -111,22 +155,39 @@ public class PlayerShooting : MonoBehaviour
         Destroy(grenade);
     }
 
-    private IEnumerator BlinkSprite()
+    IEnumerator ShootFlame()
     {
-        SpriteRenderer spriteRenderer = grenadePrefab.GetComponent<SpriteRenderer>();
-
-        // Blink selama 3 detik
-        float totalTime = 3f;
-        float blinkTime = 0.2f;
-
-        while (totalTime > 0f)
+        while (Input.GetButton("Fire1"))
         {
-            spriteRenderer.enabled = false;
-            yield return new WaitForSeconds(blinkTime);
-            spriteRenderer.enabled = true;
-            yield return new WaitForSeconds(blinkTime);
+            // Buat instance flamePrefab
+            GameObject flame = Instantiate(bulletPrefabs[_currentWeaponIndex], firePoint.position, firePoint.rotation);
 
-            totalTime -= blinkTime * 2f;
+            // Set parent flame ke firePoint agar mengikuti rotasi dari firePoint
+            flame.transform.SetParent(firePoint);
+
+            // Set Active flame prefab
+            flame.SetActive(true);
+
+            // Set kecepatan flame
+            Rigidbody2D rb = flame.GetComponent<Rigidbody2D>();
+            rb.velocity = firePoint.up * bulletForces[2];
+
+            // Hancurkan setelah beberapa waktu
+            Destroy(flame, 2f);
+
+            // Pause sejenak untuk memberi waktu flame menyentuh objek
+            yield return new WaitForSeconds(0.1f);
+
+            // Menghitung jarak dari api ke setiap musuh
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(flame.transform.position, 5f);
+            foreach (Collider2D hit in hitEnemies)
+            {
+                Enemy enemy = hit.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(100);
+                }
+            }
         }
     }
 
@@ -145,6 +206,13 @@ public class PlayerShooting : MonoBehaviour
                 float distance = Vector2.Distance(hit.transform.position, position);
 
                 rb.AddForce(direction.normalized * (grenadeForce / distance), ForceMode2D.Impulse);
+            }
+
+            // Jika objek adalah musuh, maka musuh tersebut akan mati
+            Enemy enemy = hit.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(100);
             }
         }
     }

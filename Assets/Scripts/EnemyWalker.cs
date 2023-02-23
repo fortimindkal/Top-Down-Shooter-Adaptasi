@@ -4,6 +4,30 @@ using UnityEngine;
 
 public class EnemyWalker : Enemy
 {
+    public float attackDelay = 0f; // Waktu delay menyerang
+    protected override void Update()
+    {
+        base.Update();
+
+        // Jika pemain dekat dengan enemy, serang pemain
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+        if (distanceToTarget <= attackRange && attackDelay <= 0f)
+        {
+            AttackPlayer();
+            attackDelay = 3f;
+            Debug.Log("Attack!");
+        }
+
+        if (attackDelay > 0)
+        {
+            attackDelay -= Time.deltaTime;
+        }
+        else
+        {
+            attackDelay = 0;
+        }
+    }
+
     protected override void ChasePlayer()
     {
         // Mengatur arah gerakan musuh ke arah pemain

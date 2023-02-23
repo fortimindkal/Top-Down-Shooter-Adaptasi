@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     public float moveSpeed = 5f;        // Kecepatan gerakan karakter
     [SerializeField] float _playerHealth = 100f;
