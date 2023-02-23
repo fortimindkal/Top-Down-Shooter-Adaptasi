@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5f;        // Kecepatan gerakan karakter
+    [SerializeField] float _playerHealth = 100f;
 
     private Vector2 moveDir;      // Arah gerakan karakter
     private Vector2 mousePos;   // Posisi Mouse
@@ -45,5 +46,10 @@ public class PlayerController : MonoBehaviour
         Vector2 lookDir = mousePos - rb.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = angle;
+    }
+
+    public void TakeDamage(float health)
+    {
+        _playerHealth -= health;
     }
 }
