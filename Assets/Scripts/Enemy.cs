@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Enemy : MonoBehaviour
+public abstract class Enemy : Controller
 {
-    public float health = 100f;
     public float moveSpeed = 5f;    // Kecepatan gerakan musuh
     public float chaseRange = 10f;  // Jarak pandang musuh
     public float attackRange = 8f;  // Jarak serangan musuh
     public float attackDamage = 5f;  // Kekuatan serangan musuh
+    public float attackDelay = 0f; // Waktu delay menyerang
 
     protected Transform target;   // Transform pemain
     protected Rigidbody2D rb;
@@ -27,11 +27,9 @@ public abstract class Enemy : MonoBehaviour
         // Jika pemain dalam jarak pandang, kejar pemain
         if (distanceToTarget <= chaseRange)
         {
-            ChasePlayer();
+            FindTarget();
         }
     }
-
-    protected abstract void ChasePlayer();
 
     protected virtual void AttackPlayer()
     {
@@ -39,19 +37,25 @@ public abstract class Enemy : MonoBehaviour
         target.GetComponent<PlayerController>().TakeDamage(attackDamage);
     }
 
-    public void TakeDamage(int damage)
+    protected override void Move()
     {
-        health -= damage;
-
-        if (health <= 0)
-        {
-            Die();
-        }
+        // Mengatur arah gerakan musuh ke arah pemain
+        Vector2 direction = (target.position - transform.position).normalized;
+        rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
     }
 
-    private void Die()
+    protected override void Rotate()
     {
-        // Menghilangkan game object enemy dari scene
-        Destroy(gameObject);
+        // Mengatur rotasi musuh agar menghadap ke arah pemain
+        Vector3 targetDirection = target.position - transform.position;
+        float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg - 90f;
+        rb.rotation = angle;
     }
+
+    protected virtual void FindTarget()
+    {
+        Move();
+        Rotate();
+    }
+
 }

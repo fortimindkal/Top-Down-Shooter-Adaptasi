@@ -330,11 +330,11 @@ GameObject:
   - component: {fileID: 190321139}
   m_Layer: 0
   m_Name: Enemy Shooter
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &190321139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,10 +347,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae68de5a16b26f647bc7f0246dd27d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Health: 0
   moveSpeed: 2
   chaseRange: 10
   attackRange: 1
   attackDamage: 10
+  attackDelay: 0
   shootRange: 5
   fireRate: 1
   firePoint: {fileID: 137926604}
@@ -570,11 +572,11 @@ GameObject:
   - component: {fileID: 441082414}
   m_Layer: 0
   m_Name: Enemy Charger
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &441082410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,10 +589,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 430a737f3f1b6da40b81e7557647034a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Health: 0
   moveSpeed: 2
   chaseRange: 10
   attackRange: 1
   attackDamage: 10
+  attackDelay: 0
   chargeRange: 5
   chargeSpeed: 10
   chargeTimer: 0
@@ -972,7 +976,7 @@ GameObject:
   - component: {fileID: 572734396}
   m_Layer: 0
   m_Name: Enemy Walker
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -989,6 +993,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98eab6ecd5bd0c34fa8965b35f36b9e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Health: 100
   moveSpeed: 3
   chaseRange: 10
   attackRange: 1
@@ -1362,8 +1367,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 762cc45f4431f544a96fd138cfc86442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Health: 100
   moveSpeed: 10
-  _playerHealth: 100
   rb: {fileID: 698323167}
   cam: {fileID: 474613474}
 --- !u!114 &698323170
@@ -1480,7 +1485,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.017398357, y: -0.075433254}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1491,7 +1496,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.12, y: 1.42}
+  m_Size: {x: 1.7372351, y: 0.61924744}
   m_EdgeRadius: 0
 --- !u!1 &703011676 stripped
 GameObject:

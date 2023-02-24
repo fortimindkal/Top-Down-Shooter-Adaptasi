@@ -86,18 +86,9 @@ public class PlayerShooting : MonoBehaviour
         GameObject bullet = _bulletPool.GetBullet();
         bullet.transform.position = firePoint.position;
         bullet.transform.rotation = firePoint.rotation;
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.AddForce(firePoint.up * bulletForces[_currentWeaponIndex], ForceMode2D.Impulse);
-
-        // Menghitung jarak dari bullet ke setiap musuh
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(bullet.transform.position, 5f);
-        foreach (Collider2D hit in hitEnemies)
+        if(bullet.TryGetComponent(out Rigidbody2D rb))
         {
-            Enemy enemy = hit.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(100);
-            }
+            rb.AddForce(firePoint.up * bulletForces[_currentWeaponIndex], ForceMode2D.Impulse);
         }
     }
 
@@ -139,17 +130,19 @@ public class PlayerShooting : MonoBehaviour
 
         // Membuat dan membuang grenade
         GameObject grenade = Instantiate(grenadePrefab, firePoint.position, firePoint.rotation);
-        Rigidbody2D rb = grenade.GetComponent<Rigidbody2D>();
-        rb.AddForce(firePoint.up * grenadeForce, ForceMode2D.Impulse);
+        if (grenade.TryGetComponent(out Rigidbody2D rb))
+        {
+            rb.AddForce(firePoint.up * grenadeForce, ForceMode2D.Impulse);
 
-        // Delay waktu player melempar grenade
-        yield return new WaitForSeconds(grenadeThrowDelay);
-        _isThrowingGrenade = false;
+            // Delay waktu player melempar grenade
+            yield return new WaitForSeconds(grenadeThrowDelay);
+            _isThrowingGrenade = false;
 
-        // Menghentikan grenade yang telah dilempar
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-
+            // Menghentikan grenade yang telah dilempar
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+        
         // Membuat efek ledakan
         ExplodeGrenade(grenade.transform.position);
         Destroy(grenade);
@@ -169,8 +162,10 @@ public class PlayerShooting : MonoBehaviour
             flame.SetActive(true);
 
             // Set kecepatan flame
-            Rigidbody2D rb = flame.GetComponent<Rigidbody2D>();
-            rb.velocity = firePoint.up * bulletForces[2];
+            if (flame.TryGetComponent(out Rigidbody2D rb))
+            {
+                rb.velocity = firePoint.up * bulletForces[2];
+            }
 
             // Hancurkan setelah beberapa waktu
             Destroy(flame, 2f);
@@ -179,13 +174,15 @@ public class PlayerShooting : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
 
             // Menghitung jarak dari api ke setiap musuh
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(flame.transform.position, 5f);
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(flame.transform.position, 3f);
             foreach (Collider2D hit in hitEnemies)
             {
-                Enemy enemy = hit.GetComponent<Enemy>();
-                if (enemy != null)
+                if (hit.TryGetComponent(out Enemy enemy))
                 {
-                    enemy.TakeDamage(100);
+                    if (enemy != null)
+                    {
+                        enemy.TakeDamage(100);
+                    }
                 }
             }
         }
@@ -199,20 +196,24 @@ public class PlayerShooting : MonoBehaviour
         foreach (Collider2D hit in colliders)
         {
             // Jika objek memiliki komponen Rigidbody2D, tambahkan kekuatan ledakan ke objek tersebut
-            Rigidbody2D rb = hit.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            if (hit.TryGetComponent(out Rigidbody2D rb))
             {
-                Vector2 direction = hit.transform.position - position;
-                float distance = Vector2.Distance(hit.transform.position, position);
+                if (rb != null)
+                {
+                    Vector2 direction = hit.transform.position - position;
+                    float distance = Vector2.Distance(hit.transform.position, position);
 
-                rb.AddForce(direction.normalized * (grenadeForce / distance), ForceMode2D.Impulse);
+                    rb.AddForce(direction.normalized * (grenadeForce / distance), ForceMode2D.Impulse);
+                }
             }
 
             // Jika objek adalah musuh, maka musuh tersebut akan mati
-            Enemy enemy = hit.GetComponent<Enemy>();
-            if (enemy != null)
+            if (hit.TryGetComponent(out Enemy enemy))
             {
-                enemy.TakeDamage(100);
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(100);
+                }
             }
         }
     }

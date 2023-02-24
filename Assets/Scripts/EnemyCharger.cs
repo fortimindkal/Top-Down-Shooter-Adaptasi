@@ -23,6 +23,14 @@ public class EnemyCharger : Enemy
             StartCoroutine(Charge());
         }
 
+        if (distanceToTarget <= attackRange && attackDelay <= 0f)
+        {
+            AttackPlayer();
+            attackDelay = 3f;
+            Debug.Log("Attack!");
+        }
+
+
         if (_charging)
         {
             // Menghitung waktu serangan
@@ -45,18 +53,11 @@ public class EnemyCharger : Enemy
         }
     }
 
-    protected override void ChasePlayer()
+    protected override void FindTarget()
     {
         if (!_charging)
         {
-            // Mengatur arah gerakan musuh ke arah pemain
-            Vector2 direction = (target.position - transform.position).normalized;
-            rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
-
-            // Mengatur rotasi musuh agar menghadap ke arah pemain
-            Vector3 targetDirection = target.position - transform.position;
-            float angle = Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg - 90f;
-            rb.rotation = angle;
+            base.FindTarget();
         }
     }
 

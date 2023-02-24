@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, IDamageable
+public class PlayerController : Controller
 {
     public float moveSpeed = 5f;        // Kecepatan gerakan karakter
-    [SerializeField] float _playerHealth = 100f;
 
     private Vector2 moveDir;      // Arah gerakan karakter
     private Vector2 mousePos;   // Posisi Mouse
 
     public Rigidbody2D rb;
     public Camera cam;
-
-    private void Start()
-    {
-
-    }
 
     private void Update()
     {
@@ -30,26 +24,21 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void FixedUpdate()
     {
-        Movement();
-        Rotation();
+        Move();
+        Rotate();
     }
 
-    private void Movement()
+    protected override void Move()
     {
         // Menggerakkan karakter sesuai arah gerakan dan kecepatan
         rb.MovePosition(rb.position + moveDir * moveSpeed * Time.fixedDeltaTime);
     }
 
-    private void Rotation()
+    protected override void Rotate()
     {
         // Mengarahkan senjata ke arah kursor mouse
         Vector2 lookDir = mousePos - rb.position;
         float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = angle;
-    }
-
-    public void TakeDamage(float health)
-    {
-        _playerHealth -= health;
     }
 }

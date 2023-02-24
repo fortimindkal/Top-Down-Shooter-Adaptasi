@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 9131285024161216936}
   - component: {fileID: 7786198034958152145}
   - component: {fileID: 2399298625413673619}
+  - component: {fileID: 802300715874056618}
   m_Layer: 0
   m_Name: Flame
   m_TagString: Untagged
@@ -131,3 +132,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &802300715874056618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4893438888900290935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf22c4ae9ba89941893644b47a19598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
